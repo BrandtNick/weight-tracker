@@ -1,19 +1,40 @@
+'use strict';
+
 import {MongoClient} from 'mongodb';
 
 // Replace the uri string with your connection string.
-const uri = 'mongodb://localhost:27017';
+const uri = 'mongodb://mongodb:27017';
+const COLLECTION = 'weights';
 
 const client = new MongoClient(uri);
 
+const setupCollection = async (database) => {
+  try {
+  database.createCollection(
+    COLLECTION,
+    {
+      timeseries: {
+        timeField: "timestamp",
+        metaField: "metadata"
+      }
+    }
+  );
+  } catch (err) {
+    console.error({err});
+  }
+};
+
 const initDB = async (fastify) => {
-  
   try {
     const database = client.db('wt');
-    const weights = database.collection('weight');
+    // await setupCollection(database);
+    const weights = database.collection(COLLECTION);
+    console.log({weights});
     fastify.decorate('conf', {
-      coll: weights,
+      weights,
     })
-  } finally {
+  } catch (err) {
+    console.error({err});
     // Ensures that the client will close when you finish/error
     await client.close();
   }
