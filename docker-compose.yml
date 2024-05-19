@@ -29,7 +29,6 @@ services:
       - "3001:3001"
     volumes:
       - ./api:/app
-      - /app/node_modules
 
   mongodb:
     container_name: wt_mongodb
