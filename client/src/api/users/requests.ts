@@ -13,3 +13,13 @@ export const create = async (user: User) => {
   const result = await response.json();
   return result;
 };
+
+export const fetchMe = async () => {
+  const response = await fetch(`${BASE_API_URL}/users/me`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  const result = await response.json();
+  return result;
+};

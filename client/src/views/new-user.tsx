@@ -7,15 +7,15 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 
 import {COLORS} from '../constants';
 import Input from '../components/input';
-import {authRequests} from '../api';
+import {userRequests} from '../api';
 
-const Login = () => {
+const NewUser = () => {
   // Third party hooks
   const queryClient = useQueryClient();
 
   // API hooks
-  const login = useMutation({
-    mutationFn: authRequests.authenticate,
+  const create = useMutation({
+    mutationFn: userRequests.create,
     onSuccess: () => {
       queryClient.invalidateQueries(['user']);
     },
@@ -61,17 +61,17 @@ const Login = () => {
         colorScheme='blue'
         color={COLORS.blue3}
         onClick={() => {
-          login.mutate(user);
+          create.mutate(user);
         }}
         disabled={!user.username || !user.password}
         _hover={{
           bg: COLORS.blue2,
         }}
       >
-        Login
+        Create
       </Button>
     </Flex>
   );
 };
 
-export default Login;
+export default NewUser;

@@ -1,11 +1,12 @@
 import React from 'react'
+import {useQuery} from '@tanstack/react-query'
 import {
   ChakraProvider,
   Flex,
 } from '@chakra-ui/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import Login from './views/login'
+import Views from './views';
 
 const queryClient = new QueryClient()
 
@@ -21,7 +22,7 @@ const App = () => {
           h='100vh'
           w='100vw'
         >
-          <Login />
+          <Views />
         </Flex>
       </QueryClientProvider>
     </ChakraProvider>
