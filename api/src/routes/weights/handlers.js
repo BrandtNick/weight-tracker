@@ -3,10 +3,6 @@
 import {weightCreationSchema} from '../../schemas/index.js';
 
 export const fetch = async (req, res) => {
-  console.log({session: req.session});
-  if (!req.session.user) {
-    return res.status(401).send('Unauthorized');
-  }
   const cursor = req.weights
     .find({})
     .toArray();

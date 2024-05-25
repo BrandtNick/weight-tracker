@@ -7,6 +7,7 @@ import {
   create,
   assertIsValidWeightBody,
 } from './handlers.js';
+import {assertIsAuthorized} from '../../middlewares/index.js';
 
 const WEIGHTS_URI = `${BASE_API_URI}/weights`;
 
@@ -17,11 +18,12 @@ const applyWeightsRoutes = (fastify) => {
   })
   fastify.get(
     WEIGHTS_URI,
+    createPreHandler([assertIsAuthorized]),
     fetch,
   )
   fastify.post(
     WEIGHTS_URI,
-    createPreHandler(assertIsValidWeightBody),
+    createPreHandler([assertIsValidWeightBody]),
     create,
   )
 };

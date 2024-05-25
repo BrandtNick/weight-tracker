@@ -13,6 +13,10 @@ export const fetch = async (req, res) => {
   return cursor;
 };
 
+export const fetchMe = async (req, res) => {
+  return req.session.user;
+};
+
 export const create = async (req, res) => {
   const {username, password} = req.body;
   const result = await req.users.insertOne({username, password});

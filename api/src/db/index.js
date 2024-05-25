@@ -49,6 +49,7 @@ const initDB = async (fastify) => {
     await setupCollection(db);
     const weights = db.collection(WEIGHTS_COLLECTION);
     const users = db.collection(USERS_COLLECTION);
+    users.createIndex('username', {unique: true})
     fastify.decorate('conf', {weights, users});
   } catch (err) {
     console.error('Error connecting to DB', err);
