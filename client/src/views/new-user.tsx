@@ -37,7 +37,6 @@ const NewUser = () => {
         type='text'
         icon='User'
         valid={!!user.username}
-        width='400px'
         disabled={false}
         onChange={({target: {value}}) => setUser({...user, username: value})}
         value={user.username}
@@ -47,7 +46,6 @@ const NewUser = () => {
         type='password'
         icon='Lock'
         valid={!!user.password}
-        width='400px'
         disabled={false}
         onChange={({target: {value}}) => setUser({...user, password: value})}
         value={user.password}

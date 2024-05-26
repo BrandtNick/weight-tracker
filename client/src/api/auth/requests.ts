@@ -14,3 +14,13 @@ export const authenticate = async (user: User) => {
   const result = await response.json();
   return result;
 };
+
+export const signOut = async () => {
+  const response = await fetch(`${BASE_API_URL}/auth`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  const result = await response.json();
+  return result;
+};

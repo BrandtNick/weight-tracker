@@ -1,38 +1,31 @@
 import React from 'react';
-import {useQuery} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import {
-  Button,
   Flex,
-  HStack,
+  Heading,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from '@chakra-ui/react';
-import {User, ChevronDown} from 'react-feather';
+import {User} from 'react-feather';
 
 import {COLORS} from '../../constants';
+import {authRequests} from '../../api';
 
 interface NavbarProps {
   username: string;
 }
 
-const CustomButton = () => (
-  <Button
-    h='28px'
-    w='100px'
-    m='10px'
-    variant='outline'
-    colorScheme='blue'
-    color={COLORS.blue3}
-  />
-);
-
 const Navbar = (props: NavbarProps) => {
+  // API hooks
+  const signOut = useMutation({
+    mutationFn: authRequests.signOut,
+    onSuccess: () => {
+      window.location.reload();
+    },
+  });
+
   return (
     <Flex
       position='fixed'
@@ -45,7 +38,7 @@ const Navbar = (props: NavbarProps) => {
       h='90px'
       w='100vw'
     >
-      <h3>WT</h3>
+      <Heading size='xs'>WEIGHT TRACKER</Heading>
       <Menu>
         <MenuButton
           bg={COLORS.blue5}
@@ -70,7 +63,7 @@ const Navbar = (props: NavbarProps) => {
           </Flex>
           <MenuItem
             onClick={() => {
-              // Logout
+              signOut.mutate();
             }}
             border='none'
             bg={COLORS.blue5}

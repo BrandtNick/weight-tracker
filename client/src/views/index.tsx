@@ -9,6 +9,7 @@ import NewUser from './new-user';
 import {userRequests} from '../api';
 
 const Views = () => {
+  // API hooks
   const {
     isLoading,
     isError,
@@ -16,6 +17,7 @@ const Views = () => {
   } = useQuery({
     queryKey: ['me'],
     queryFn: userRequests.fetchMe,
+    retry: 1,
   });
 
   if (isLoading) {
