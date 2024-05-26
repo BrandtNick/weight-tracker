@@ -1,6 +1,8 @@
 import React from 'react';
 import {useQuery} from '@tanstack/react-query';
 
+import Spinner from '../components/spinner';
+import Navbar from '../components/navbar';
 import WeightTracker from './weight-tracker';
 import Login from './login';
 import NewUser from './new-user';
@@ -17,7 +19,7 @@ const Views = () => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   if (isError) {
@@ -28,7 +30,14 @@ const Views = () => {
     return <div>No data</div>
   }
 
-  return <WeightTracker />;
+  return (
+    <>
+      <Navbar
+        username={data.username}
+      />
+      <WeightTracker />;
+    </>
+  );
 };
 
 export default Views;
