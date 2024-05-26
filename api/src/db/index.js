@@ -2,6 +2,8 @@
 
 import {MongoClient} from 'mongodb';
 
+import {DATABASE_NAME} from '../constants.js';
+
 // Replace the uri string with your connection string.
 const MONGO_URL = 'mongodb://mongodb:27017';
 const WEIGHTS_COLLECTION = 'weights';
@@ -45,7 +47,7 @@ const setupCollection = async (db) => {
 
 const initDB = async (fastify) => {
   try {
-    const db = client.db('wt');
+    const db = client.db(DATABASE_NAME);
     await setupCollection(db);
     const weights = db.collection(WEIGHTS_COLLECTION);
     const users = db.collection(USERS_COLLECTION);

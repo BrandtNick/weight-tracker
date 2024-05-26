@@ -9,6 +9,12 @@ export const authenticate = async (req, res) => {
   return {message: 'Successfully logged in'};
 };
 
+export const signOut = async (req, res) => {
+  req.session.destroy();
+  req.session.user = null;
+  return {message: 'Successfully logged out'};
+}
+
 export const assertIsValidAuthBody = async (req, res) => {
   try {
     const {username, password} = req.body;
@@ -23,6 +29,12 @@ export const assertUserExists = async (req, res) => {
   req.user = await req.users.findOne({username});
   if (!req.user) {
     return res.status(401).send('Wrong username');
+  }
+};
+
+export const assertIsLoggedIn = async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send('Not logged in');
   }
 };
 
