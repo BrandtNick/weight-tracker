@@ -9,21 +9,25 @@ export const fetch = async (req, res) => {
   return cursor;
 };
 
-export const assertIsValidWeightBody = (req, res) => {
+export const assertIsValidWeightBody = (req, res, next) => {
   try {
-    const {weight, metadata} = req.body;
-    weightCreationSchema.parse({weight, metadata});
+    req.body.timestamp = new Date(req.body.timestamp);
+    const {weight, timestamp} = req.body;
+    weightCreationSchema.parse({weight, timestamp});
+    next();
   } catch (err) {
     res.status(400).send(err.issues);
   }
-}
+};
 
 export const create = async (req, res) => {
-  const {weight, metadata} = req.body;
+  const {weight, timestamp} = req.body;
   const data = {
-    timestamp: new Date(),
+    timestamp: timestamp,
     weight,
-    metadata,
+    metadata: {
+      user: req.session.user,
+    },
   };
   const result = await req.weights.insertOne(data);
   return result;

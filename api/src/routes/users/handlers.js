@@ -23,10 +23,11 @@ export const create = async (req, res) => {
   return result;
 };
 
-export const assertIsValidUserBody = async (req, res) => {
+export const assertIsValidUserBody = (req, res, next) => {
   try {
     const {username, password} = req.body;
     userCreationSchema.parse({username, password});
+    next();
   } catch (err) {
     res.status(400).send(err.issues);
   }
@@ -36,5 +37,4 @@ export const hashPassword = async (req, res) => {
   const {password} = req.body;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   req.body.password = hashedPassword;
-  console.log({body: req.body});
 };
