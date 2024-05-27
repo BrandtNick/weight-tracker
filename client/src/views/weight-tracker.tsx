@@ -1,10 +1,15 @@
 import React from 'react';
 import {
   Badge,
+  Button,
   Flex,
   Text,
 } from '@chakra-ui/react';
-import {useQuery} from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   LineChart,
   Line,
@@ -15,11 +20,16 @@ import {
 } from 'recharts';
 import {format, parseISO} from 'date-fns';
 
+import Input from '../components/input';
 import Spinner from '../components/spinner';
 import {COLORS} from '../constants';
 import {weightRequests} from '../api';
 
 const WeightTracker = () => {
+  // Third party hooks
+  const queryClient = useQueryClient();
+
+  // API hooks
   const {
     isLoading,
     data,
@@ -27,6 +37,23 @@ const WeightTracker = () => {
     queryKey: ['weights'],
     queryFn: weightRequests.fetchWeights,
   });
+  const weightCreationMutation = useMutation({
+    mutationFn: weightRequests.createWeight,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['weights']});
+    },
+  });
+
+  // Local state hooks
+  const [weight, setWeight] = React.useState('');
+  const [timestamp, setTimestamp] = React.useState(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+
+  const handleWeightCreation = async () => {
+    await weightCreationMutation.mutateAsync({
+      weight: Number(weight),
+      timestamp: new Date(timestamp),
+    });
+  }
 
   if (isLoading) {
     return <Spinner />;
@@ -42,9 +69,40 @@ const WeightTracker = () => {
   }));
 
   return (
-    <Flex flexDir='column' color={COLORS.blue4}>
+    <Flex flexDir='column' color={COLORS.blue4} align='center'>
+    <Flex flexDir='column' w='300px'>
+        <Input
+          placeholder='Enter your weight'
+          type='number'
+          onChange={(evt) => setWeight(evt.target.value)}
+          value={weight}
+          valid={!!weight}
+        />
+        <Input
+        // placeholder='Enter the date'
+          type='datetime-local'
+          onChange={(evt) => setTimestamp(evt.target.value)}
+          value={timestamp}
+          valid={!!timestamp}
+        />
+          <Button
+          h='28px'
+          w='100px'
+          m='10px'
+          variant='outline'
+          colorScheme='blue'
+          color={COLORS.blue3}
+          onClick={handleWeightCreation}
+          disabled={!weight || !timestamp}
+          _hover={{
+            bg: COLORS.blue2,
+          }}
+        >
+          Create
+        </Button>
+      </Flex>
       <Flex h='200px' fontSize='.9em' align='center' justify='center'>
-        <Text>Current weight</Text> 
+        <Text>Current weight</Text>
         <Badge
           colorScheme='blue'
           color={COLORS.blue3}

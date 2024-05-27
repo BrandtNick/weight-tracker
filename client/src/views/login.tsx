@@ -3,22 +3,16 @@ import {
   Button,
   Flex,
 } from '@chakra-ui/react';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 
 import {COLORS} from '../constants';
 import Input from '../components/input';
 import {authRequests} from '../api';
 
 const Login = () => {
-  // Third party hooks
-  const queryClient = useQueryClient();
-
   // API hooks
   const login = useMutation({
     mutationFn: authRequests.authenticate,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['user']);
-    },
   });
   
   // State hooks
@@ -37,7 +31,6 @@ const Login = () => {
         type='text'
         icon='User'
         valid={!!user.username}
-        width='400px'
         disabled={false}
         onChange={({target: {value}}) => setUser({...user, username: value})}
         value={user.username}
@@ -47,7 +40,6 @@ const Login = () => {
         type='password'
         icon='Lock'
         valid={!!user.password}
-        width='400px'
         disabled={false}
         onChange={({target: {value}}) => setUser({...user, password: value})}
         value={user.password}

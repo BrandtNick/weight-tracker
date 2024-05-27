@@ -13,14 +13,17 @@ export const fetchWeights = async () => {
   return data;
 };
 
-export const createWeight = async (weight: Weight) => {
+export const createWeight = async ({
+  weight,
+  timestamp,
+}: {weight: Weight, timestamp: Date}) => {
   const response = await fetch(`${BASE_API_URL}/weights`, {
     method: 'POST',
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({weight}),
+    body: JSON.stringify({weight, timestamp}),
   });
   const data = await response.json();
   return data;

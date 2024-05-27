@@ -3,22 +3,16 @@ import {
   Button,
   Flex,
 } from '@chakra-ui/react';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 
 import {COLORS} from '../constants';
 import Input from '../components/input';
 import {userRequests} from '../api';
 
 const NewUser = () => {
-  // Third party hooks
-  const queryClient = useQueryClient();
-
   // API hooks
   const create = useMutation({
     mutationFn: userRequests.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['user']);
-    },
   });
   
   // State hooks

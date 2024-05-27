@@ -14,7 +14,7 @@ interface InputProps {
   value: string;
   placeholder: string;
   disabled: boolean;
-  icon: keyof typeof Icon;
+  icon?: keyof typeof Icon;
   valid: boolean;
 }
 
@@ -30,7 +30,7 @@ const Input = (
   }: InputProps
 ) => {
   const [focused, setFocused] = React.useState(false);
-  const InputIcon = Icon[icon];
+  const InputIcon = icon ? Icon[icon] : null;
 
   return (
     <InputWrapper>
@@ -39,9 +39,11 @@ const Input = (
       >
         {placeholder}
       </InputLabel>
-      <InputPrepender>
-        <InputIcon size={25}/>
-      </InputPrepender>
+      {icon && (
+        <InputPrepender>
+          <InputIcon size={25}/>
+        </InputPrepender>
+      )}
       <StyledInput
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
