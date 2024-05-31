@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {COLORS} from '../../constants';
 
 const StyledInput = styled.input<{value: string}>`
-  height: 35px;
+  height: 45px;
   width: 100%;
   padding: 5px 35px 5px 50px;
   margin: 20px 0 15px;

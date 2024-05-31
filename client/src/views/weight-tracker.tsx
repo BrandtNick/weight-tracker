@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Badge,
   Button,
   Flex,
   Text,
@@ -17,15 +16,22 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 import {format, parseISO} from 'date-fns';
+import {BarChart2} from 'react-feather';
 
 import Input from '../components/input';
 import Spinner from '../components/spinner';
-import {COLORS} from '../constants';
+import {COLORS, WEIGHT_TRACKER_ROUTES} from '../constants';
 import {weightRequests} from '../api';
 
-const WeightTracker = () => {
+interface WeightTrackerProps {
+  route: keyof typeof WEIGHT_TRACKER_ROUTES;
+  setRoute: React.Dispatch<React.SetStateAction<keyof typeof WEIGHT_TRACKER_ROUTES>>;
+}
+
+const WeightTracker = (props: WeightTrackerProps) => {
   // Third party hooks
   const queryClient = useQueryClient();
 
@@ -68,63 +74,118 @@ const WeightTracker = () => {
     timestamp: format(parseISO(weight.timestamp), 'dd/MM/yyyy'),
   }));
 
+  const getDataDifference = () => {
+    const diff = Number((data[data.length - 1].weight - data[data.length - 2].weight).toFixed(1))
+    return diff;
+  };
+
+  const isNegative = Math.sign(getDataDifference()) === -1;
+
   return (
-    <Flex flexDir='column' color={COLORS.blue4} align='center'>
-    <Flex flexDir='column' w='300px'>
-        <Input
-          placeholder='Enter your weight'
-          type='number'
-          onChange={(evt) => setWeight(evt.target.value)}
-          value={weight}
-          valid={!!weight}
-        />
-        <Input
-        // placeholder='Enter the date'
-          type='datetime-local'
-          onChange={(evt) => setTimestamp(evt.target.value)}
-          value={timestamp}
-          valid={!!timestamp}
-        />
-          <Button
-          h='28px'
-          w='100px'
-          m='10px'
-          variant='outline'
-          colorScheme='blue'
-          color={COLORS.blue3}
-          onClick={handleWeightCreation}
-          disabled={!weight || !timestamp}
-          _hover={{
-            bg: COLORS.blue2,
-          }}
-        >
-          Create
-        </Button>
-      </Flex>
-      <Flex h='200px' fontSize='.9em' align='center' justify='center'>
-        <Text>Current weight</Text>
-        <Badge
-          colorScheme='blue'
-          color={COLORS.blue3}
-          m='10px'
-          p='5px'
-          h='28px'
-        >
-          {data[data.length - 1].weight} kg
-        </Badge>
-      </Flex>
-      <LineChart
-        width={900}
-        height={400}
-        data={formattedData}
-        margin={{top: 5, right: 20, bottom: 5, left: 0}}
+    <Flex
+      flexDir='column'
+      color={COLORS.blue4}
+      align='center'
+      width='100%'
+    >
+      <Flex
+        w='100%'
+        h='420px'
+        justify='space-around'
+        align='center'
       >
-        <Line type="monotone" dataKey="weight" stroke="#8884d8" />
-        <CartesianGrid stroke={COLORS.grey} strokeDasharray="5 5" />
-        <YAxis stroke={COLORS.grey2} />
-        <XAxis stroke={COLORS.grey2} dy={10} dataKey='timestamp' />
-        <Tooltip />
-      </LineChart>
+        {{
+          [WEIGHT_TRACKER_ROUTES.new]: (
+            <Flex flexDir='column'>
+              <Input
+                placeholder='Enter your weight'
+                type='number'
+                onChange={(evt) => setWeight(evt.target.value)}
+                value={weight}
+                valid={!!weight}
+              />
+              <Input
+                type='datetime-local'
+                onChange={(evt) => setTimestamp(evt.target.value)}
+                value={timestamp}
+                valid={!!timestamp}
+              />
+              <Button
+                h='40px'
+                m='10px'
+                variant='outline'
+                colorScheme='blue'
+                color={COLORS.blue3}
+                onClick={handleWeightCreation}
+                disabled={!weight || !timestamp}
+                _hover={{
+                  bg: COLORS.blue2,
+                }}
+              >
+                Create
+              </Button>
+              <Button
+                h='40px'
+                m='10px'
+                variant='outline'
+                colorScheme='blue'
+                color={COLORS.blue3}
+                onClick={() => props.setRoute(WEIGHT_TRACKER_ROUTES.show)}
+                disabled={!weight || !timestamp}
+                _hover={{
+                  bg: COLORS.blue2,
+                }}
+              >
+                Cancel
+              </Button>
+            </Flex>
+          ),
+          [WEIGHT_TRACKER_ROUTES.show]: (
+            <Flex flexDir='column' h='80vh' w='100%'>
+              <Flex
+                h='220px'
+                marginBottom='70px'
+                fontSize='.9em'
+                align='center'
+                justify='center'
+              >
+                <Flex
+                  boxShadow={'0 0 10px' + COLORS.blue3}
+                  justify='center'
+                  align='center'
+                  flexDir='column'
+                  borderRadius='100%'
+                  border={'5px solid' + COLORS.blue3}
+                  w='220px'
+                  h='220px'
+               >
+                 <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
+                  <BarChart2 color={COLORS.blue3} />
+                  {!isNegative && '+'}{getDataDifference()} kg
+                 </Flex>
+                  <Text
+                    fontSize='3em'
+                  >
+                    {data[data.length - 1].weight} kg
+                  </Text>
+                </Flex>
+              </Flex>
+              <ResponsiveContainer width="100%" height='100%'>
+                <LineChart
+                  data={formattedData}
+                  margin={{top: 5, right: 20, bottom: 5, left: 0}}
+                >
+                  <Line type="monotone" dataKey="weight" stroke={COLORS.blue3} />
+                  <CartesianGrid stroke={COLORS.grey} strokeDasharray="3 3" />
+                  <YAxis stroke={COLORS.blue4} />
+                  <XAxis stroke={COLORS.blue4} dy={10} dataKey='timestamp' />
+                  <Tooltip />
+                </LineChart>
+              </ResponsiveContainer>
+            </Flex>
+          ),
+        }[props.route]}
+      </Flex>
     </Flex>
   );
 };

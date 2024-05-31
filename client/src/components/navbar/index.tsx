@@ -1,20 +1,21 @@
 import React from 'react';
 import {useMutation} from '@tanstack/react-query';
 import {
+  Button,
   Flex,
-  Heading,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
 } from '@chakra-ui/react';
-import {User} from 'react-feather';
+import {User, Plus} from 'react-feather';
 
-import {COLORS} from '../../constants';
+import {COLORS, WEIGHT_TRACKER_ROUTES} from '../../constants';
 import {authRequests} from '../../api';
 
 interface NavbarProps {
   username: string;
+  setRoute: React.Dispatch<React.SetStateAction<keyof typeof WEIGHT_TRACKER_ROUTES>>;
 }
 
 const Navbar = (props: NavbarProps) => {
@@ -33,17 +34,36 @@ const Navbar = (props: NavbarProps) => {
       justify='space-between'
       align='center'
       bgGradient={`linear(to-b, ${COLORS.blue5}, ${COLORS.blue5}, ${COLORS.blue})`}
-      color={COLORS.blue3}
+      color={COLORS.blue4}
       p='0 20px 35px'
       h='90px'
       w='100vw'
     >
-      <Heading size='xs'>WEIGHT TRACKER</Heading>
+      <Button
+        _focus={{
+          outline: 'none',
+          bg: COLORS.blue5,
+        }}
+        _hover={{
+          bg: COLORS.blue5,
+          color: COLORS.blue4,
+        }}
+        w='42px'
+        h='42px'
+        p='8px'
+        color={COLORS.blue4}
+        bg={COLORS.blue5}
+        onClick={() => {
+          props.setRoute(WEIGHT_TRACKER_ROUTES.new);
+        }}
+      >
+        <Plus />
+      </Button>
       <Menu>
         <MenuButton
           bg={COLORS.blue5}
           _focus={{outline: 'none'}}
-          p='5px'
+          p='8px'
         >
           <User />
         </MenuButton>

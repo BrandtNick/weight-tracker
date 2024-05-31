@@ -7,6 +7,7 @@ import WeightTracker from './weight-tracker';
 import Login from './login';
 import NewUser from './new-user';
 import {userRequests} from '../api';
+import {WEIGHT_TRACKER_ROUTES} from '../constants';
 
 const Views = () => {
   // API hooks
@@ -19,6 +20,12 @@ const Views = () => {
     queryFn: userRequests.fetchMe,
     retry: 1,
   });
+
+  // Local state hooks
+  const [
+    route,
+    setRoute,
+  ] = React.useState<keyof typeof WEIGHT_TRACKER_ROUTES>(WEIGHT_TRACKER_ROUTES);
 
   if (isLoading) {
     return <Spinner />;
@@ -36,8 +43,12 @@ const Views = () => {
     <>
       <Navbar
         username={data.username}
+        setRoute={setRoute}
       />
-      <WeightTracker />;
+      <WeightTracker
+        route={route}
+        setRoute={setRoute}
+      />
     </>
   );
 };
