@@ -12,10 +12,10 @@ interface InputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   type: string;
   value: string;
-  placeholder: string;
-  disabled: boolean;
-  icon?: keyof typeof Icon;
   valid: boolean;
+  placeholder?: string;
+  disabled?: boolean;
+  icon?: keyof typeof Icon;
 }
 
 const Input = (
@@ -39,7 +39,7 @@ const Input = (
       >
         {placeholder}
       </InputLabel>
-      {icon && (
+      {InputIcon && (
         <InputPrepender>
           <InputIcon size={25}/>
         </InputPrepender>

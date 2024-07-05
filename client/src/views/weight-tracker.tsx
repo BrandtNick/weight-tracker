@@ -3,12 +3,16 @@ import {
   Button,
   Flex,
   Text,
+  chakra,
+  shouldForwardProp,
 } from '@chakra-ui/react';
 import {
   useQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
+import {motion, isValidMotionProp} from "framer-motion";
+
 import {
   LineChart,
   Line,
@@ -25,6 +29,15 @@ import Input from '../components/input';
 import Spinner from '../components/spinner';
 import {COLORS, WEIGHT_TRACKER_ROUTES} from '../constants';
 import {weightRequests} from '../api';
+import {WeightData} from '../types';
+
+const ChakraBox = chakra(motion.div, {
+  /**
+   * Allow motion props and non-Chakra props to be forwarded.
+   */
+  shouldForwardProp: (prop) =>
+    isValidMotionProp(prop) || shouldForwardProp(prop)
+});
 
 interface WeightTrackerProps {
   route: keyof typeof WEIGHT_TRACKER_ROUTES;
@@ -59,23 +72,26 @@ const WeightTracker = (props: WeightTrackerProps) => {
       weight: Number(weight),
       timestamp: new Date(timestamp),
     });
+    props.setRoute(WEIGHT_TRACKER_ROUTES.show);
+    setWeight('');
+    setTimestamp(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
   }
 
   if (isLoading) {
     return <Spinner />;
   }
 
-  if (!data) {
-    return <div>No data</div>;
+  if (!data || data.length === 0) {
+    return <Text color={COLORS.blue4}>No data available, add new data!</Text>;
   }
 
-  const formattedData = data.map((weight) => ({
+  const formattedData = data.map((weight: WeightData) => ({
     ...weight,
     timestamp: format(parseISO(weight.timestamp), 'dd/MM/yyyy'),
   }));
 
   const getDataDifference = () => {
-    const diff = Number((data[data.length - 1].weight - data[data.length - 2].weight).toFixed(1))
+    const diff = Number((data?.[data.length - 1].weight - data?.[data.length - 2].weight).toFixed(1))
     return diff;
   };
 
@@ -87,10 +103,13 @@ const WeightTracker = (props: WeightTrackerProps) => {
       color={COLORS.blue4}
       align='center'
       width='100%'
+      height='80%'
+      marginTop='120px'
+      marginBottom='50px'
     >
       <Flex
         w='100%'
-        h='420px'
+        h='100%'
         justify='space-around'
         align='center'
       >
@@ -130,7 +149,11 @@ const WeightTracker = (props: WeightTrackerProps) => {
                 variant='outline'
                 colorScheme='blue'
                 color={COLORS.blue3}
-                onClick={() => props.setRoute(WEIGHT_TRACKER_ROUTES.show)}
+                onClick={() => {
+                  props.setRoute(WEIGHT_TRACKER_ROUTES.show);
+                  setWeight('');
+                  setTimestamp(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+                }}
                 disabled={!weight || !timestamp}
                 _hover={{
                   bg: COLORS.blue2,
@@ -141,24 +164,39 @@ const WeightTracker = (props: WeightTrackerProps) => {
             </Flex>
           ),
           [WEIGHT_TRACKER_ROUTES.show]: (
-            <Flex flexDir='column' h='80vh' w='100%'>
+            <Flex justify='space-around' flexDir='column' h='100%' w='100%'>
               <Flex
-                h='220px'
-                marginBottom='70px'
+                h='100%'
+                maxH='220px'
+                marginBottom='50px'
                 fontSize='.9em'
                 align='center'
                 justify='center'
               >
-                <Flex
+                <ChakraBox
+                animate={{
+                  scale: [1, 1.05, 1],
+                  // rotate: [0, 360],
+                  borderRadius: ["100%", "100%"]
+                }}
+                // @ts-expect-error - framer-motion types are incorrect
+                transition={{
+                  duration: 3,
+                  // ease: "easeInOut",
+                  ease: "linear",
+                  repeat: Infinity,
+                  repeatType: "loop"
+                }}
                   boxShadow={'0 0 10px' + COLORS.blue3}
-                  justify='center'
-                  align='center'
+                  display='flex'
+                  justifyContent='center'
+                  alignItems='center'
                   flexDir='column'
-                  borderRadius='100%'
                   border={'5px solid' + COLORS.blue3}
                   w='220px'
                   h='220px'
                >
+                 {/*
                  <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
                   <BarChart2 color={COLORS.blue3} />
                   {!isNegative && '+'}{getDataDifference()} kg
@@ -167,18 +205,29 @@ const WeightTracker = (props: WeightTrackerProps) => {
                     fontSize='3em'
                   >
                     {data[data.length - 1].weight} kg
-                  </Text>
+                    </Text>*/}
+                </ChakraBox>
+                <Flex position='absolute' flexDir='column'>
+                  <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
+                  <BarChart2 color={COLORS.blue3} />
+                  {!isNegative && '+'}{getDataDifference()} kg
+                 </Flex>
+                  <Text
+                    fontSize='3em'
+                  >
+                    {data[data.length - 1].weight} kg
+                    </Text>
                 </Flex>
               </Flex>
-              <ResponsiveContainer width="100%" height='100%'>
+              <ResponsiveContainer style={{padding: '0 20px 0 20px'}} maxHeight={400} width="100%" height='100%'>
                 <LineChart
                   data={formattedData}
                   margin={{top: 5, right: 20, bottom: 5, left: 0}}
                 >
-                  <Line type="monotone" dataKey="weight" stroke={COLORS.blue3} />
+                  <Line type="monotone" dot={false} dataKey="weight" strokeWidth={2} stroke={COLORS.blue3} />
                   <CartesianGrid stroke={COLORS.grey} strokeDasharray="3 3" />
-                  <YAxis stroke={COLORS.blue4} />
-                  <XAxis stroke={COLORS.blue4} dy={10} dataKey='timestamp' />
+                  <YAxis stroke={COLORS.blue4} unit=' kg' />
+                  <XAxis stroke={COLORS.blue3} dy={10} dataKey='timestamp' />
                   <Tooltip />
                 </LineChart>
               </ResponsiveContainer>

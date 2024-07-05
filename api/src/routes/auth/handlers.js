@@ -20,7 +20,7 @@ export const assertIsValidAuthBody = async (req, res) => {
     const {username, password} = req.body;
     userCreationSchema.parse({username, password});
   } catch (err) {
-    res.status(400).send(err.issues);
+    return res.status(400).send(err.issues);
   }
 };
 

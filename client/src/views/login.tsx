@@ -2,14 +2,20 @@ import React from 'react';
 import {
   Button,
   Flex,
+  Text,
 } from '@chakra-ui/react';
 import {useMutation} from '@tanstack/react-query';
 
-import {COLORS} from '../constants';
+import {COLORS, USER_ROUTES} from '../constants';
 import Input from '../components/input';
 import {authRequests} from '../api';
 
-const Login = () => {
+interface LoginProps {
+  setUserRoute: React.Dispatch<React.SetStateAction<keyof typeof USER_ROUTES>>;
+  refetch: () => void;
+}
+
+const Login = (props: LoginProps) => {
   // API hooks
   const login = useMutation({
     mutationFn: authRequests.authenticate,
@@ -54,14 +60,27 @@ const Login = () => {
         color={COLORS.blue3}
         onClick={() => {
           login.mutate(user);
+          props.refetch();
         }}
-        disabled={!user.username || !user.password}
+        isDisabled={!user.username || !user.password}
         _hover={{
           bg: COLORS.blue2,
         }}
       >
-        Login
+        Sign in
       </Button>
+      <Text
+        marginTop='10px'
+        fontSize='12px'
+        onClick={() => props.setUserRoute(USER_ROUTES.new)}
+        color={COLORS.blue3}
+        cursor='pointer'
+        _hover={{
+          textDecoration: 'underline',
+        }}
+      >
+        Dont have an account? Sign up now
+      </Text>
     </Flex>
   );
 };
