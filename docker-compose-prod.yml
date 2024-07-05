@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  client:
+    container_name: wt_client
+    build:
+      context: ./client
+      dockerfile:
+        Dockerfile.prod
+    restart: on-failure
+    ports:
+      - "80:80"
+    stdin_open: true
+    volumes:
+      - ./client:/app
+
+  api:
+    container_name: wt_api
+    build:
+      context: ./api
+      dockerfile:
+        Dockerfile.prod
+    restart: on-failure
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./api:/app
+
+  mongodb:
+    container_name: wt_mongodb
+    image: mongo:6.0
+    volumes:
+        - 'dbdata:/data/db'
+    ports:
+      - "27017:27017"
+    healthcheck:
+      interval: 10s
+      retries: 300
+      test: ["CMD", "mongo", "--quiet", "localhost", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      timeout: 10s
+
+volumes:
+  dbdata:
