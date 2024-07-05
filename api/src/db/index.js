@@ -36,7 +36,7 @@ const setupCollection = async (db) => {
   }
   if (!userCollectionExists) {
     try {
-      database.createCollection(USERS_COLLECTION);
+      db.createCollection(USERS_COLLECTION);
     } catch (err) {
       console.error(`Error creating collection ${USERS_COLLECTION}`, err);
     }
