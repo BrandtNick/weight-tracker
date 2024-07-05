@@ -17,4 +17,4 @@ COPY ./ .
 EXPOSE 3001
 
 # command to run when intantiate an image
-CMD ["NODE_ENV=production", "node", "."]
+CMD ["NODE_ENV=production", "node", "--env-file=.env", "."]
