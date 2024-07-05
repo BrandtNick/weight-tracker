@@ -21,7 +21,7 @@ const setupCollection = async (db) => {
   const userCollectionExists = collectionNames.includes(USERS_COLLECTION);
   if (!weightCollectionExists) {
     try {
-      database.createCollection(
+      db.createCollection(
         WEIGHTS_COLLECTION,
         {
           timeseries: {
