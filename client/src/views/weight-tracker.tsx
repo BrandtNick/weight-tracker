@@ -160,7 +160,7 @@ const NewWeightData = (props: NewWeightDataProps) => {
 };
 
 interface ShowWeightDataProps {
-  data: WeightData[];
+  data: WeightData[] | undefined;
 }
 
 const ShowWeightData = (props: ShowWeightDataProps) => {
