@@ -27,6 +27,6 @@ export const applyFastifyPlugins = (fastify) => {
   console.info('Applying Fastify plugins...');
   fastify.register(fastifyCookie);
   fastify.register(fastifySession, sessionOpts);
-  fastify.register(fastifyCors, {origin: ["http://localhost", "https://weight-tracker.zirr.dev"], credentials: true});
+  fastify.register(fastifyCors, {origin: ["http://localhost:3000", "https://weight-tracker.zirr.dev"], credentials: true});
   console.info('Fastify plugins applied.');
 };
