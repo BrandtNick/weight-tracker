@@ -173,7 +173,9 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
     timestamp: format(parseISO(weight.timestamp), 'dd/MM/yyyy'),
   }));
 
-  const getDataDifference = Number((props.data?.[props.data.length - 1].weight - props.data?.[props.data.length - 2].weight).toFixed(1));
+  const getDataDifference = props.data.length >= 2
+    ? Number((props.data[props.data.length - 1]?.weight - props.data[props.data.length - 2]?.weight).toFixed(1))
+    : 0;
 
   const isNegative = Math.sign(getDataDifference) === -1;
 
