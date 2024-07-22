@@ -164,7 +164,7 @@ interface ShowWeightDataProps {
 }
 
 const ShowWeightData = (props: ShowWeightDataProps) => {
-  if (!props.data || props.data.length === 0) {
+  if (props.data === undefined || props.data.length === 0) {
     return <Text color={COLORS.blue4}>No data available, add new data!</Text>;
   }
 
@@ -173,13 +173,9 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
     timestamp: format(parseISO(weight.timestamp), 'dd/MM/yyyy'),
   }));
 
-  const getDataDifference = () => {
-    const diff = Number((props.data?.[props.data.length - 1].weight - props.data?.[props.data.length - 2].weight).toFixed(1))
-    return diff;
-  };
+  const getDataDifference = Number((props.data?.[props.data.length - 1].weight - props.data?.[props.data.length - 2].weight).toFixed(1));
 
-  const isNegative = Math.sign(getDataDifference()) === -1;
-
+  const isNegative = Math.sign(getDataDifference) === -1;
 
   return (
     <Flex justify='space-around' flexDir='column' h='100%' w='100%'>
@@ -229,7 +225,7 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
         <Flex position='absolute' flexDir='column'>
           <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
             <BarChart2 color={COLORS.blue3} />
-              {!isNegative && '+'}{getDataDifference()} kg
+              {!isNegative && '+'}{getDataDifference} kg
           </Flex>
           <Text
             fontSize='3em'
