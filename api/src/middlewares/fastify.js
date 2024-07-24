@@ -9,7 +9,7 @@ import {DATABASE_NAME} from '../constants.js';
 
 const cookieOpts = {
   maxAge: 14 * 24 * 60 * 60, // 14 days
-  secure: process.env.NODE_ENV === 'production',
+  secure: false,
 };
 
 const mongoStoreOpts = {
