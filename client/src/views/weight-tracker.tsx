@@ -192,13 +192,11 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
         <ChakraBox
           animate={{
             scale: [1, 1.05, 1],
-            // rotate: [0, 360],
             borderRadius: ["100%", "100%"]
           }}
           // @ts-expect-error - framer-motion types are incorrect
           transition={{
             duration: 3,
-            // ease: "easeInOut",
             ease: "linear",
             repeat: Infinity,
             repeatType: "loop"
@@ -212,17 +210,6 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
           w='220px'
           h='220px'
         >
-          {/*
-            <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
-              <BarChart2 color={COLORS.blue3} />
-                {!isNegative && '+'}{getDataDifference()} kg
-            </Flex>
-            <Text
-              fontSize='3em'
-            >
-              {data[data.length - 1].weight} kg
-            </Text>
-          */}
         </ChakraBox>
         <Flex position='absolute' flexDir='column'>
           <Flex justify='center' flexDir='column' align='center' fontSize='.9em' color={COLORS.blue4}>
