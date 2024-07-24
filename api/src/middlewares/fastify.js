@@ -7,14 +7,17 @@ import MongoStore from 'connect-mongo';
 
 import {DATABASE_NAME} from '../constants.js';
 
-const cookieOpts = {
-  maxAge: 14 * 24 * 60 * 60, // 14 days
-  secure: false,
-};
+const MONGO_URL = 'mongodb://mongodb:27017';
+const COOKIE_EXPIRATION_TIME = 2628000000;
 
 const mongoStoreOpts = {
-  mongoUrl: 'mongodb://mongodb:27017',
+  mongoUrl: MONGO_URL,
   dbName: DATABASE_NAME,
+};
+
+const cookieOpts = {
+  maxAge: COOKIE_EXPIRATION_TIME,
+  secure: false,
 };
 
 const sessionOpts = {
@@ -25,7 +28,7 @@ const sessionOpts = {
 
 export const applyFastifyPlugins = (fastify) => {
   console.info('Applying Fastify plugins...');
-  fastify.register(fastifyCookie);
+  fastify.register(fastifyCookie, cookieOpts);
   fastify.register(fastifySession, sessionOpts);
   fastify.register(fastifyCors, {origin: ["http://localhost:3000", "https://weight-tracker.zirr.dev"], credentials: true});
   console.info('Fastify plugins applied.');
