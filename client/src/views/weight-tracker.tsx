@@ -230,7 +230,13 @@ const ShowWeightData = (props: ShowWeightDataProps) => {
         >
           <Line type="monotone" dot={false} dataKey="weight" strokeWidth={2} stroke={COLORS.blue3} />
           <CartesianGrid stroke={COLORS.grey} strokeDasharray="3 3" />
-          <YAxis stroke={COLORS.blue4} domain={['dataMin - 5', 'dataMax + 5']} unit=' kg' />
+          <YAxis
+            tickFormatter={val => val.toFixed(0)}
+            stroke={COLORS.blue4}
+            allowDecimals={false}
+            domain={['dataMin - 5', 'dataMax + 5']}
+            unit=' kg'
+          />
           <XAxis stroke={COLORS.blue3} dy={10} dataKey='timestamp' />
           <Tooltip />
         </LineChart>
