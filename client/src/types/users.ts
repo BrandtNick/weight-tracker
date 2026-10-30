@@ -3,6 +3,12 @@ interface User {
   password: string;
 }
 
+interface UserProfile {
+  _id: string;
+  username: string;
+}
+
 export type {
-  User
+  User,
+  UserProfile,
 };

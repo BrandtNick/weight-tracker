@@ -4,6 +4,8 @@ export const COLORS = {
   blue3: '#303f9f',
   blue4: '#9fa8da',
   blue5: '#0b1e2e',
+  accent: '#4F83A8',
+  accentHover: '#6196BB',
   green: '#4caf50',
   grey: '#424242',
   grey2: '#d3d3d3',

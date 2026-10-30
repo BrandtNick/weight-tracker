@@ -7,7 +7,7 @@ export const weightSchema = z
     weight: z.number().positive(),
     timestamp: z.date(),
     metadata: z.object({
-      user: z
+      userId: z
         .string()
         .refine((value) => ObjectId.isValid(value), {
           message: 'Invalid ObjectId format',

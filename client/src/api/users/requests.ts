@@ -1,5 +1,6 @@
 import {BASE_API_URL} from '../../constants';
-import type {User} from '../../types';
+import type {User, UserProfile} from '../../types';
+import {readResponse} from '../response';
 
 export const create = async (user: User) => {
   const response = await fetch(`${BASE_API_URL}/users`, {
@@ -10,8 +11,7 @@ export const create = async (user: User) => {
     body: JSON.stringify(user),
   });
 
-  const result = await response.json();
-  return result;
+  return readResponse(response);
 };
 
 export const fetchMe = async () => {
@@ -20,6 +20,5 @@ export const fetchMe = async () => {
     credentials: 'include',
   });
 
-  const result = await response.json();
-  return result;
+  return readResponse<UserProfile>(response);
 };

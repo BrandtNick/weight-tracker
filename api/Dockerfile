@@ -4,8 +4,10 @@ FROM node:lts-alpine
 RUN mkdir -p /app
 WORKDIR /app
 
-# copying all the files from your file system to container file system
-COPY package.json .
+RUN npm install -g yarn
+
+# copying dependency manifests first keeps installs reproducible and cacheable
+COPY package.json yarn.lock ./
 
 # install all dependencies
 RUN yarn

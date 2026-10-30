@@ -20,6 +20,7 @@ const applyUsersRoutes = (fastify) => {
   })
   fastify.get(
     USERS_URI,
+    createPreHandler([assertIsAuthorized]),
     fetch,
   );
   fastify.get(

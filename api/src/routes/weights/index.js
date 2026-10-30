@@ -23,7 +23,7 @@ const applyWeightsRoutes = (fastify) => {
   )
   fastify.post(
     WEIGHTS_URI,
-    createPreHandler([assertIsValidWeightBody]),
+    createPreHandler([assertIsAuthorized, assertIsValidWeightBody]),
     create,
   )
 };

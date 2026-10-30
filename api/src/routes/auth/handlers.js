@@ -5,8 +5,12 @@ import bcrypt from 'bcryptjs';
 import {userCreationSchema} from '../../schemas/index.js';
 
 export const authenticate = async (req, res) => {
-  req.session.user = req.user;
-  return {message: 'Successfully logged in'};
+  const user = {
+    _id: req.user._id.toString(),
+    username: req.user.username,
+  };
+  req.session.user = user;
+  return {message: 'Successfully logged in', user};
 };
 
 export const signOut = async (req, res) => {

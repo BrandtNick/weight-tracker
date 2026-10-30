@@ -1,5 +1,6 @@
 import {BASE_API_URL} from '../../constants';
 import type {Weight, WeightData} from '../../types';
+import {readResponse} from '../response';
 
 export const fetchWeights = async () => {
   const response = await fetch(
@@ -9,8 +10,7 @@ export const fetchWeights = async () => {
       credentials: 'include',
     },
   );
-  const data: WeightData[] = await response.json();
-  return data;
+  return readResponse<WeightData[]>(response);
 };
 
 export const createWeight = async ({
@@ -25,7 +25,6 @@ export const createWeight = async ({
     },
     body: JSON.stringify({weight, timestamp}),
   });
-  const data: WeightData = await response.json();
-  return data;
+  return readResponse(response);
 };
 

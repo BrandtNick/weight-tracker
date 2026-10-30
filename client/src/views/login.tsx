@@ -19,6 +19,7 @@ const Login = (props: LoginProps) => {
   // API hooks
   const login = useMutation({
     mutationFn: authRequests.authenticate,
+    onSuccess: () => props.refetch(),
   });
   
   // State hooks
@@ -60,8 +61,8 @@ const Login = (props: LoginProps) => {
         color={COLORS.blue3}
         onClick={() => {
           login.mutate(user);
-          props.refetch();
         }}
+        isLoading={login.isPending}
         isDisabled={!user.username || !user.password}
         _hover={{
           bg: COLORS.blue2,
@@ -69,6 +70,11 @@ const Login = (props: LoginProps) => {
       >
         Sign in
       </Button>
+      {login.isError && (
+        <Text color='red.300' fontSize='12px' maxWidth='240px' textAlign='center'>
+          {login.error instanceof Error ? login.error.message : 'Unable to sign in'}
+        </Text>
+      )}
       <Text
         marginTop='10px'
         fontSize='12px'

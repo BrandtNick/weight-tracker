@@ -8,13 +8,16 @@ const saltRounds = 10;
 
 export const fetch = async (req, res) => {
   const cursor = req.users
-    .find({})
+    .find({}, {projection: {password: 0}})
     .toArray();
   return cursor;
 };
 
 export const fetchMe = async (req, res) => {
-  return req.session.user;
+  return {
+    _id: req.session.user._id.toString(),
+    username: req.session.user.username,
+  };
 };
 
 export const create = async (req, res) => {

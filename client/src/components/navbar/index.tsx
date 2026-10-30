@@ -1,16 +1,23 @@
 import React from 'react';
 import {useMutation} from '@tanstack/react-query';
 import {
+  Box,
   Button,
   Flex,
+  HStack,
+  IconButton,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
+  Text,
+  Tooltip,
+  useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
-import {User, Plus} from 'react-feather';
+import {Moon, Plus, Sun, User} from 'react-feather';
 
-import {COLORS, WEIGHT_TRACKER_ROUTES} from '../../constants';
+import {WEIGHT_TRACKER_ROUTES} from '../../constants';
 import {authRequests} from '../../api';
 
 interface NavbarProps {
@@ -19,6 +26,13 @@ interface NavbarProps {
 }
 
 const Navbar = (props: NavbarProps) => {
+  const {colorMode, toggleColorMode} = useColorMode();
+  const background = useColorModeValue('whiteAlpha.900', 'rgba(11, 30, 46, 0.92)');
+  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
+  const textColor = useColorModeValue('gray.700', 'gray.100');
+  const controlBorder = useColorModeValue('gray.300', 'whiteAlpha.400');
+  const controlHover = useColorModeValue('gray.100', 'whiteAlpha.100');
+
   // API hooks
   const signOut = useMutation({
     mutationFn: authRequests.signOut,
@@ -31,70 +45,89 @@ const Navbar = (props: NavbarProps) => {
     <Flex
       position='fixed'
       top='0'
+      left='0'
+      zIndex='sticky'
       justify='space-between'
       align='center'
-      bgGradient={`linear(to-b, ${COLORS.blue5}, ${COLORS.blue5}, ${COLORS.blue})`}
-      color={COLORS.blue4}
-      p='0 20px 35px'
-      h='90px'
-      w='100vw'
+      background={background}
+      backdropFilter='blur(14px)'
+      borderBottom='1px solid'
+      borderColor={borderColor}
+      color={textColor}
+      padding={{base: '0 16px', md: '0 28px'}}
+      height='72px'
+      width='100%'
     >
       <Button
-        _focus={{
-          outline: 'none',
-          bg: COLORS.blue5,
-        }}
-        _hover={{
-          bg: COLORS.blue5,
-          color: COLORS.blue4,
-        }}
-        w='42px'
-        h='42px'
-        p='8px'
-        color={COLORS.blue4}
-        bg={COLORS.blue5}
-        onClick={() => {
-          props.setRoute(WEIGHT_TRACKER_ROUTES.new);
-        }}
+        variant='ghost'
+        padding='1'
+        height='auto'
+        onClick={() => props.setRoute(WEIGHT_TRACKER_ROUTES.show)}
+        _hover={{background: 'transparent'}}
       >
-        <Plus />
+        <Box textAlign='left'>
+          <Text fontWeight='bold' fontSize='lg' lineHeight='1.1'>Weight Tracker</Text>
+          <Text fontSize='xs' color='gray.500' fontWeight='normal'>Your progress, clearly</Text>
+        </Box>
       </Button>
-      <Menu>
-        <MenuButton
-          bg={COLORS.blue5}
-          _focus={{outline: 'none'}}
-          p='8px'
+      <HStack spacing={{base: 1, md: 2}}>
+        <Button
+          display={{base: 'none', sm: 'inline-flex'}}
+          size='sm'
+          variant='outline'
+          borderColor={controlBorder}
+          color={textColor}
+          borderRadius='4px'
+          leftIcon={<Plus size={16} />}
+          onClick={() => props.setRoute(WEIGHT_TRACKER_ROUTES.new)}
+          _hover={{background: controlHover, borderColor: textColor}}
         >
-          <User />
-        </MenuButton>
-        <MenuList
-          bg={COLORS.blue5}
-          p='0'
-          borderRadius='0'
-          border={`1px solid ${COLORS.blue2}`}
-          fontSize='.8em'
-        >
-          <Flex
-            h='40px'
-            p='10px'
-            borderBottom={`1px solid ${COLORS.blue2}`}
-          >
-            <h3>Logged in as: <b>{props.username}</b></h3>
-          </Flex>
+          Add weight
+        </Button>
+        <Tooltip label={`Switch to ${colorMode === 'dark' ? 'light' : 'dark'} mode`}>
+          <IconButton
+            aria-label='Toggle color mode'
+            variant='ghost'
+            borderRadius='4px'
+            icon={colorMode === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
+            onClick={toggleColorMode}
+          />
+        </Tooltip>
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label='User menu'
+            variant='ghost'
+            borderRadius='4px'
+            icon={<User size={20} />}
+          />
+          <MenuList fontSize='sm' padding='2' borderRadius='4px'>
+            <Flex padding='2 3 3' direction='column'>
+              <Text color='gray.500' fontSize='xs'>Signed in as</Text>
+              <Text fontWeight='semibold'>{props.username}</Text>
+            </Flex>
           <MenuItem
             onClick={() => {
               signOut.mutate();
             }}
-            border='none'
-            bg={COLORS.blue5}
-            _focus={{outline: 'none'}}
-            _hover={{bg: COLORS.blue2, color: COLORS.blue4, border: 'none'}}
-            borderRadius={0}
+            borderRadius='2px'
           >
             Sign out
           </MenuItem>
-        </MenuList>
-      </Menu>
+          </MenuList>
+        </Menu>
+        <IconButton
+          display={{base: 'inline-flex', sm: 'none'}}
+          aria-label='Add weight'
+          variant='outline'
+          borderColor={controlBorder}
+          color={textColor}
+          borderRadius='4px'
+          icon={<Plus size={19} />}
+          onClick={() => props.setRoute(WEIGHT_TRACKER_ROUTES.new)}
+          _hover={{background: controlHover, borderColor: textColor}}
+        />
+      </HStack>
     </Flex>
   );
 };
