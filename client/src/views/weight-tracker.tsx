@@ -23,7 +23,6 @@ import {
   Thead,
   Tr,
   useBreakpointValue,
-  useColorModeValue,
   usePrefersReducedMotion,
   useToast,
   VStack,
@@ -77,11 +76,6 @@ const chartLineDraw = keyframes`
   to { stroke-dashoffset: 0; }
 `;
 
-const metricValueReveal = keyframes`
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-
 const historyRowReveal = keyframes`
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -102,7 +96,7 @@ const WeightTracker = (props: WeightTrackerProps) => {
     queryKey: ['weights'],
     queryFn: weightRequests.fetchWeights,
   });
-  const textColor = useColorModeValue('gray.700', 'gray.100');
+  const textColor = 'gray.100';
 
   if (isLoading) {
     return <Spinner />;
@@ -244,16 +238,18 @@ interface ShowWeightDataProps {
 
 const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
   const [range, setRange] = React.useState<RangeLabel>('6M');
-  const mutedSurface = useColorModeValue('gray.50', 'whiteAlpha.50');
-  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
-  const gridColor = useColorModeValue('#E2E8F0', '#34445b');
-  const axisColor = useColorModeValue('#718096', '#A0AEC0');
-  const tooltipBackground = useColorModeValue('#FFFFFF', '#1A202C');
-  const selectedRangeBackground = useColorModeValue('gray.200', 'whiteAlpha.200');
-  const selectedRangeColor = useColorModeValue('gray.800', 'white');
-  const rangeHover = useColorModeValue('gray.100', 'whiteAlpha.100');
-  const badgeBackground = useColorModeValue('gray.100', 'whiteAlpha.100');
-  const badgeColor = useColorModeValue('gray.600', 'gray.300');
+  const mutedSurface = 'whiteAlpha.50';
+  const borderColor = 'rgba(90, 158, 208, 0.18)';
+  const gridColor = '#34445b';
+  const axisColor = '#9DBDD2';
+  const tooltipBackground = '#1A202C';
+  const selectedRangeBackground = 'rgba(90, 158, 208, 0.20)';
+  const selectedRangeColor = 'white';
+  const rangeHover = 'rgba(90, 158, 208, 0.10)';
+  const badgeBackground = 'rgba(90, 158, 208, 0.13)';
+  const badgeColor = '#93B8D1';
+  const dateTextColor = '#9DBDD2';
+  const sectionLabelColor = '#6FA7C8';
   const prefersReducedMotion = usePrefersReducedMotion();
   const responsiveTickLimit = useBreakpointValue({base: 5, md: 8, xl: 10}) || 5;
 
@@ -316,7 +312,7 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
   const firstInRange = filteredData[0];
   const totalChange = latest.weight - firstInRange.weight;
   const lastChange = previous ? latest.weight - previous.weight : 0;
-  const weeklyTrend = getWeeklyTrend(sortedData, 30);
+  const weeklyTrend = getWeeklyTrend(filteredData);
   const selectedRangeIndex = RANGE_OPTIONS.findIndex((option) => option.label === range);
   const visibleWeights = filteredData.map(({weight}) => weight);
   const yAxisMinimum = Math.floor(Math.min(...visibleWeights) / 5) * 5;
@@ -360,9 +356,9 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
         align={{base: 'flex-start', md: 'center'}}
       >
         <Box>
-          <Text color='gray.400' fontWeight='semibold' fontSize='sm' letterSpacing='wide'>OVERVIEW</Text>
+          <Text color={sectionLabelColor} fontWeight='semibold' fontSize='sm' letterSpacing='wide'>OVERVIEW</Text>
           <Heading size={{base: 'lg', md: 'xl'}} marginTop='1'>Your progress</Heading>
-          <Text color='gray.500' marginTop='1'>Updated {format(parseISO(latest.timestamp), 'd MMMM yyyy')}</Text>
+          <Text color={dateTextColor} marginTop='1'>Updated {format(parseISO(latest.timestamp), 'd MMMM yyyy')}</Text>
         </Box>
         <HStack
           position='relative'
@@ -380,6 +376,8 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
             width='52px'
             height='32px'
             background={selectedRangeBackground}
+            borderBottom='2px solid #5A9ED0'
+            boxShadow='0 3px 8px -4px rgba(90, 158, 208, 0.65)'
             borderRadius='3px'
             transform={`translateX(${selectedRangeIndex * 52}px)`}
             transition={prefersReducedMotion ? undefined : 'transform 220ms ease-out'}
@@ -396,6 +394,7 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
               color={range === option.label ? selectedRangeColor : undefined}
               borderRadius='3px'
               onClick={() => setRange(option.label)}
+              aria-pressed={range === option.label}
               _hover={{background: range === option.label ? 'transparent' : rangeHover}}
             >
               {option.label}
@@ -413,23 +412,28 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
       >
         <MetricCard
           label='Current weight'
-          value={`${latest.weight.toFixed(1)} kg`}
+          value={latest.weight}
           help='Latest measurement'
         />
         <MetricCard
           label='Last change'
-          value={formatSignedWeight(lastChange)}
+          value={lastChange}
+          signed
           help='Since previous entry'
         />
         <MetricCard
           label={`${range} change`}
-          value={formatSignedWeight(totalChange)}
+          value={totalChange}
+          signed
           help='Across selected range'
         />
         <MetricCard
-          label='Recent trend'
-          value={`${weeklyTrend > 0 ? '+' : ''}${weeklyTrend.toFixed(2)} kg/wk`}
-          help='Based on the last 30 days'
+          label={`${range} trend`}
+          value={weeklyTrend}
+          signed
+          precision={2}
+          unit='kg/wk'
+          help='Weekly rate in selected range'
         />
       </SimpleGrid>
 
@@ -440,8 +444,8 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
       >
         <Flex justify='space-between' align='center' marginBottom='6'>
           <Box>
-            <Heading size='md'>Weight trend</Heading>
-            <Text color='gray.500' fontSize='sm' marginTop='1'>
+            <Heading size='md' color='#C7DFEF'>Weight trend</Heading>
+            <Text color={dateTextColor} fontSize='sm' marginTop='1'>
               {format(parseISO(filteredData[0].timestamp), 'd MMM yyyy')}
               {' – '}
               {format(parseISO(filteredData[filteredData.length - 1].timestamp), 'd MMM yyyy')}
@@ -470,7 +474,7 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
             <ComposedChart data={filteredData} margin={{top: 10, right: 12, bottom: 0, left: 2}}>
               <defs>
                 <linearGradient id='weightAreaGradient' x1='0' y1='0' x2='0' y2='1'>
-                  <stop offset='0%' stopColor='#5A9ED0' stopOpacity='0.18' />
+                  <stop offset='0%' stopColor='#5A9ED0' stopOpacity='0.23' />
                   <stop offset='100%' stopColor='#5A9ED0' stopOpacity='0' />
                 </linearGradient>
               </defs>
@@ -511,12 +515,16 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
                 />
               ))}
               <Tooltip
+                cursor={{stroke: '#70ADD2', strokeWidth: 1, strokeOpacity: 0.7}}
+                isAnimationActive={!prefersReducedMotion}
+                animationDuration={140}
                 labelFormatter={(value) => format(parseISO(String(value)), 'd MMMM yyyy, HH:mm')}
                 formatter={(value) => [`${Number(value).toFixed(1)} kg`, 'Weight']}
                 contentStyle={{
                   background: tooltipBackground,
                   border: `1px solid ${borderColor}`,
-                  borderRadius: '12px',
+                  borderRadius: '4px',
+                  boxShadow: '0 4px 18px rgba(0, 0, 0, 0.22)',
                 }}
               />
               <Area
@@ -535,7 +543,7 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
                     reduceMotion={prefersReducedMotion}
                   />
                 )}
-                activeDot={{r: 6, fill: '#D6A85C', stroke: tooltipBackground, strokeWidth: 3}}
+                activeDot={<ChartSpotlight />}
                 isAnimationActive={false}
               />
               <Line
@@ -560,8 +568,8 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
       >
         <Flex justify='space-between' align='center' padding={{base: '0 0 16px', md: '0 0 20px'}}>
           <Box>
-            <Heading size='md'>Recent measurements</Heading>
-            <Text color='gray.500' fontSize='sm' marginTop='1'>Your latest entries in this range</Text>
+            <Heading size='md' color='#C7DFEF'>Recent measurements</Heading>
+            <Text color={dateTextColor} fontSize='sm' marginTop='1'>Your latest entries in this range</Text>
           </Box>
           <Button
             size='sm'
@@ -595,7 +603,7 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
                 >
                   <Td>
                     <Text fontWeight='medium'>{format(parseISO(entry.timestamp), 'd MMM yyyy')}</Text>
-                    <Text color='gray.500' fontSize='xs'>{format(parseISO(entry.timestamp), 'HH:mm')}</Text>
+                    <Text color={dateTextColor} fontSize='xs'>{format(parseISO(entry.timestamp), 'HH:mm')}</Text>
                   </Td>
                   <Td isNumeric fontWeight='bold'>{entry.weight.toFixed(1)} kg</Td>
                   <Td isNumeric>
@@ -617,34 +625,89 @@ const ShowWeightData = ({data, setRoute}: ShowWeightDataProps) => {
 
 interface MetricCardProps {
   label: string;
-  value: string;
+  value: number;
   help: string;
+  signed?: boolean;
+  precision?: number;
+  unit?: string;
 }
 
-const MetricCard = ({label, value, help}: MetricCardProps) => {
+const MetricCard = ({label, value, help, signed = false, precision = 1, unit = 'kg'}: MetricCardProps) => {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const displayValue = useAnimatedMetric(value, prefersReducedMotion);
+  // Round before choosing a sign to avoid displaying negative zero mid-transition.
+  const roundedValue = Number(displayValue.toFixed(precision));
+  const formatAmount = (amount: number) => (
+    `${signed && amount > 0 ? '+' : ''}${amount.toFixed(precision)}`
+  );
+  const labelColor = '#AEC1CF';
+  const helperColor = '#91A6B7';
   return (
     <Stat
       padding={{base: '20px 16px', md: '24px 20px'}}
     >
-      <StatLabel color='gray.500' fontSize='sm'>{label}</StatLabel>
+      <StatLabel color={labelColor} fontSize='sm'>{label}</StatLabel>
       <StatNumber
-        key={value}
+        aria-label={`${formatAmount(Number(value.toFixed(precision)))} ${unit}`}
         fontSize={{base: 'xl', md: '2xl'}}
+        sx={{fontVariantNumeric: 'tabular-nums'}}
         marginTop='1'
-        animation={prefersReducedMotion ? undefined : `${metricValueReveal} 280ms ease-out both`}
       >
-        {value}
+        <span aria-hidden='true'>
+          {formatAmount(roundedValue)}{' '}
+          <Box as='span' color='#91A6B7'>{unit}</Box>
+        </span>
       </StatNumber>
-      <StatHelpText marginBottom='0' marginTop='2' color='gray.500'>{help}</StatHelpText>
+      <StatHelpText marginBottom='0' marginTop='2' color={helperColor}>{help}</StatHelpText>
     </Stat>
+  );
+};
+
+const useAnimatedMetric = (value: number, reduceMotion: boolean) => {
+  const [displayValue, setDisplayValue] = React.useState(value);
+  const currentValue = React.useRef(value);
+
+  React.useEffect(() => {
+    const from = currentValue.current;
+    if (reduceMotion || from === value) {
+      currentValue.current = value;
+      setDisplayValue(value);
+      return;
+    }
+
+    let frameId: number;
+    let startTime: number | undefined;
+    const update = (time: number) => {
+      startTime ??= time;
+      const progress = Math.min((time - startTime) / 420, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+      currentValue.current = progress === 1 ? value : from + (value - from) * easedProgress;
+      setDisplayValue(currentValue.current);
+      if (progress < 1) frameId = requestAnimationFrame(update);
+    };
+    frameId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(frameId);
+  }, [value, reduceMotion]);
+
+  return reduceMotion ? value : displayValue;
+};
+
+const ChartSpotlight = ({cx, cy}: DotProps) => {
+  if (cx === undefined || cy === undefined) return <></>;
+
+  return (
+    <g pointerEvents='none' aria-hidden='true'>
+      <circle cx={cx} cy={cy} r={17} fill='#5A9ED0' fillOpacity={0.08} />
+      <circle cx={cx} cy={cy} r={11} fill='#5A9ED0' fillOpacity={0.17} />
+      <circle cx={cx} cy={cy} r={5.5} fill='#D6A85C' stroke='#0e2436' strokeWidth={2} />
+    </g>
   );
 };
 
 const ChangeBadge = ({value}: {value: number}) => {
   const isLoss = value < 0;
-  const badgeBackground = useColorModeValue('gray.100', 'whiteAlpha.100');
-  const badgeColor = useColorModeValue('gray.600', 'gray.300');
+  const badgeBackground = 'rgba(90, 158, 208, 0.13)';
+  const badgeColor = '#93B8D1';
   return (
     <Badge
       background={badgeBackground}
@@ -708,13 +771,6 @@ const ChartDot = ({cx, cy, isLatest, reduceMotion}: ChartDotProps) => {
   );
 };
 
-const getRecentData = (data: WeightData[], days: number) => {
-  if (data.length === 0) return [];
-  const latestTime = parseISO(data[data.length - 1].timestamp).getTime();
-  const cutoff = latestTime - days * 24 * 60 * 60 * 1000;
-  return data.filter(({timestamp}) => parseISO(timestamp).getTime() >= cutoff);
-};
-
 const getEvenlySpacedTicks = (data: WeightData[], limit: number) => {
   if (data.length <= limit) return data.map(({timestamp}) => timestamp);
 
@@ -732,11 +788,10 @@ const formatXAxisTick = (timestamp: string, range: RangeLabel) => {
   return `${format(date, 'MMM')} ’${format(date, 'yy')}`;
 };
 
-const getWeeklyTrend = (data: WeightData[], days: number) => {
-  const recentData = getRecentData(data, days);
-  if (recentData.length < 2) return 0;
-  const first = recentData[0];
-  const last = recentData[recentData.length - 1];
+const getWeeklyTrend = (data: WeightData[]) => {
+  if (data.length < 2) return 0;
+  const first = data[0];
+  const last = data[data.length - 1];
   const elapsedDays = Math.max(
     (parseISO(last.timestamp).getTime() - parseISO(first.timestamp).getTime()) / (24 * 60 * 60 * 1000),
     1,

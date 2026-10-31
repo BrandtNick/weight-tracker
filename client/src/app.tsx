@@ -1,9 +1,7 @@
 import {
   ChakraProvider,
-  ColorModeScript,
   Flex,
   extendTheme,
-  useColorModeValue,
 } from '@chakra-ui/react'
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
@@ -11,6 +9,11 @@ import Views from './views';
 import {COLORS} from './constants';
 
 const queryClient = new QueryClient()
+const darkModeManager = {
+  type: 'localStorage' as const,
+  get: () => 'dark' as const,
+  set: () => undefined,
+}
 const theme = extendTheme({
   config: {
     initialColorMode: 'dark',
@@ -27,13 +30,11 @@ const theme = extendTheme({
 })
 
 const AppContent = () => {
-  const background = useColorModeValue('gray.50', COLORS.blue);
-
   return (
     <Flex
       justify='center'
       align='flex-start'
-      background={background}
+      background={COLORS.blue}
       minHeight='100vh'
       width='100%'
     >
@@ -44,8 +45,7 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ChakraProvider theme={theme}>
-      <ColorModeScript initialColorMode='dark' />
+    <ChakraProvider theme={theme} colorModeManager={darkModeManager}>
       <QueryClientProvider client={queryClient}>
         <AppContent />
       </QueryClientProvider>

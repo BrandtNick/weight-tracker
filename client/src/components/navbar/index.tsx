@@ -11,11 +11,8 @@ import {
   MenuList,
   MenuItem,
   Text,
-  Tooltip,
-  useColorMode,
-  useColorModeValue,
 } from '@chakra-ui/react';
-import {Moon, Plus, Sun, User} from 'react-feather';
+import {Plus, User} from 'react-feather';
 
 import {WEIGHT_TRACKER_ROUTES} from '../../constants';
 import {authRequests} from '../../api';
@@ -26,12 +23,11 @@ interface NavbarProps {
 }
 
 const Navbar = (props: NavbarProps) => {
-  const {colorMode, toggleColorMode} = useColorMode();
-  const background = useColorModeValue('whiteAlpha.900', 'rgba(11, 30, 46, 0.92)');
-  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
-  const textColor = useColorModeValue('gray.700', 'gray.100');
-  const controlBorder = useColorModeValue('gray.300', 'whiteAlpha.400');
-  const controlHover = useColorModeValue('gray.100', 'whiteAlpha.100');
+  const background = 'rgba(11, 30, 46, 0.92)';
+  const borderColor = 'whiteAlpha.200';
+  const textColor = 'gray.100';
+  const controlBorder = 'whiteAlpha.400';
+  const controlHover = 'rgba(90, 158, 208, 0.12)';
 
   // API hooks
   const signOut = useMutation({
@@ -84,15 +80,6 @@ const Navbar = (props: NavbarProps) => {
         >
           Add weight
         </Button>
-        <Tooltip label={`Switch to ${colorMode === 'dark' ? 'light' : 'dark'} mode`}>
-          <IconButton
-            aria-label='Toggle color mode'
-            variant='ghost'
-            borderRadius='4px'
-            icon={colorMode === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
-            onClick={toggleColorMode}
-          />
-        </Tooltip>
         <Menu>
           <MenuButton
             as={IconButton}
